@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="SampleSuite" parallel="false">
+  <test name="SampleTest">
+    <classes>
+      <class name="TestDemo"/>
+    </classes>
+  </test> 
+</suite>
