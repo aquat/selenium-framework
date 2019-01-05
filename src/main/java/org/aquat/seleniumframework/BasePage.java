@@ -1,9 +1,9 @@
 package org.aquat.seleniumframework;
 
 import org.apache.log4j.Logger;
-import org.aquat.seleniumframework.data.ProjectProperty;
-import org.aquat.seleniumframework.data.PropertyService;
+import org.aquat.seleniumframework.data.ConfigService;
 import org.aquat.seleniumframework.util.SystemLogger;
+import org.aquat.seleniumframework.yamlmodel.ProjectConfig;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -17,6 +17,7 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 public class BasePage {
 	protected WebDriver driver;
 	protected static Logger logger = SystemLogger.getLogger(BasePage.class);
+	private ProjectConfig config = ConfigService.getInstance().getConfigModel();
 	
 	/**
 	 * 
@@ -25,7 +26,7 @@ public class BasePage {
 	 */
 	public BasePage(WebDriver driver) {
 		this.driver = driver;
-		int waits = Integer.parseInt(PropertyService.getInstance().getProperty(ProjectProperty.IMPLICIT_WAITS));
+		int waits = Integer.parseInt(config.getSelenium().getImplicitwaits());
 		AjaxElementLocatorFactory factory = new AjaxElementLocatorFactory(driver, waits);
 		PageFactory.initElements(factory, this);
 	}

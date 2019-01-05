@@ -1,0 +1,17 @@
+#Sample of Test Data
+#
+#General data are used across all test cases as default value
+general:
+  url: 'https://www.baidu.com'
+  username: 'tom'
+  password: 'hello1'
+  
+#Define test data specific to each test case  
+cases:
+  org.aquat.seleniumframework.it.TestSearchSelenium:
+    url: 'https://www.baidu.com'
+    keyword: 'selenium'
+    title: 'selenium_'
+  org.aquat.seleniumframework.it.TestSearchHello:
+    keyword: 'hello'
+    title: 'hello_'

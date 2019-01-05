@@ -24,15 +24,6 @@ public interface ProjectProperty {
 	static final String CHROME_ARGS= "webdriver.chrome.args";
 	static final String CHROME_EXTS = "webdriver.chrome.extensions";
 	static final String CHROME_DOWNLOAD_DIR = "webdriver.chrome.download.directory";
-	
-	static final String TEST_DATA_SOURCE = "test.data.source";
-	static final String TEST_DATA_SET = "test.data.set";
-	static final String TEST_URL = "test.url";
-	
-	static final String TEST_LOGIN_CLASS = "test.login.class";
-	static final String TEST_LOGIN_METHOD = "test.login.method";
-	static final String TEST_USERNAME = "test.username";
-	static final String TEST_PASSWORD = "test.password";	
 
 	static final String LOGGER_SWITCH = "logger.switch";
 }

@@ -1,0 +1,26 @@
+selenium:
+  grid: false
+  gridServer: 'http://192.168.35.34:4444/wd/hub'
+  implicitwaits: 30
+browser:
+  size: maximize
+  type: chrome
+  autoClose: true
+webdriver:
+  chrome:
+    bin: ''
+    driver: ''
+    args:
+    - 'no-sandbox'
+    - 'proxy-server=proxy.pal.sap.corp:8080'
+    extensions:
+    - 'C:/java/lib/drivers/proxy/proxy.zip'
+    downloadDirectory: ''
+  firefox:
+    bin: ''
+    driver: ''
+    profile: ''
+  ie:
+    driver: ''
+log:
+  level: INFO

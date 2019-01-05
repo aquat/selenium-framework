@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suite name="SampleSuite" parallel="false">
-  <test name="SampleTest">
-    <classes>
-      <class name="TestDemo"/>
-    </classes>
-  </test> 
+<suite name="Sample Suite" parallel="false">
+	<test name="Sample Test">
+		<classes>
+			<class name="org.aquat.seleniumframework.it.TestSearchSelenium" />
+			<class name="org.aquat.seleniumframework.it.TestSearchHello" />
+		</classes>
+	</test>
 </suite>

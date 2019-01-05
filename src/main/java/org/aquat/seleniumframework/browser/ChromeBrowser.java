@@ -4,14 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.aquat.seleniumframework.data.ConfigService;
 import org.aquat.seleniumframework.data.ProjectProperty;
-import org.aquat.seleniumframework.data.PropertyService;
+import org.aquat.seleniumframework.yamlmodel.ProjectConfig;
 
 /**
  * <p>Implementation of Chrome browsers; used to create Chrome instance</p>
@@ -19,7 +21,7 @@ import org.aquat.seleniumframework.data.PropertyService;
  */
 public class ChromeBrowser implements IBrowser {
 	private ChromeOptions options = new ChromeOptions();
-	private PropertyService ps = PropertyService.getInstance();
+	private ProjectConfig config = ConfigService.getInstance().getConfigModel();
 	
 	public WebDriver startBrowser(boolean mode) {
 		if (mode==false) {
@@ -30,14 +32,14 @@ public class ChromeBrowser implements IBrowser {
 
 	private WebDriver browserStandalone() {
 		logger.info("Starting Chrome browser...");
-		System.setProperty(ProjectProperty.CHROME_DRIVER, ps.getProperty(ProjectProperty.CHROME_DRIVER));	
-		addChromeOptions();	
+		System.setProperty(ProjectProperty.CHROME_DRIVER, config.getWebdriver().getChrome().getDriver());	
+		addChromeOptions();		
 		return new ChromeDriver(options);
 	}
 	
 	private WebDriver browserGrid() {
 		WebDriver driver = null;
-		String gridServer = ps.getProperty(ProjectProperty.SELENIUM_GRID_SERVER);
+		String gridServer = config.getSelenium().getGridServer();
 		logger.info("Starting Chrome browser in selenium grid mode...");
 		DesiredCapabilities capability = DesiredCapabilities.chrome();
 		capability.setBrowserName("chrome");
@@ -50,22 +52,24 @@ public class ChromeBrowser implements IBrowser {
 	}
 	
 	private void addChromeOptions() {
-		if (!ps.getProperty(ProjectProperty.CHROME_ARGS).isEmpty()) {
-			String para[] = ps.getProperty(ProjectProperty.CHROME_ARGS).split(";");
-			for (String str:para) {
-				if (!str.trim().isEmpty()) {
-					logger.info("Adding Chrome Argument: " + str.trim());
-					options.addArguments(str.trim());
+		ArrayList<String> args = config.getWebdriver().getChrome().getArgs();
+		ArrayList<String> extensions = config.getWebdriver().getChrome().getExtensions();
+		String downloadDir = config.getWebdriver().getChrome().getDownloadDirectory();
+		
+		if (!args.isEmpty()) {
+			for (String arg : args) {
+				if (!arg.trim().isEmpty()) {
+					logger.info("Adding Chrome Argument: " + arg.trim());
+					options.addArguments(arg.trim());
 				}	
 			}
 		}
 		
-		if (!ps.getProperty(ProjectProperty.CHROME_EXTS).isEmpty()) {
-			String para[] = ps.getProperty(ProjectProperty.CHROME_EXTS).split(";");
-			for (String str:para) {
-				if (!str.trim().isEmpty()) {
+		if (!extensions.isEmpty()) {
+			for (String extension : extensions) {
+				if (!extension.trim().isEmpty()) {
 					
-					String userDir = str.trim();
+					String userDir = extension.trim();
 					String canonicalDir = null;
 					try {
 						canonicalDir = new File(userDir).getCanonicalPath();
@@ -79,14 +83,13 @@ public class ChromeBrowser implements IBrowser {
 			}
 		}
 		
-		if (!ps.getProperty(ProjectProperty.CHROME_DOWNLOAD_DIR).isEmpty()) {
+		if (!downloadDir.isEmpty()) {
 			HashMap<String, Object> prefs = new HashMap<String, Object>();
 			//prefs.put("profile.default_content_settings.popups", 0);
 			
-			String userDir = ps.getProperty(ProjectProperty.CHROME_DOWNLOAD_DIR);
 			String canonicalDir = null;
 			try {
-				canonicalDir = new File(userDir).getCanonicalPath();
+				canonicalDir = new File(downloadDir).getCanonicalPath();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

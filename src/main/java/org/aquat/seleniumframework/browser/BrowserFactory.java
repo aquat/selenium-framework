@@ -3,10 +3,9 @@ package org.aquat.seleniumframework.browser;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
-
-import org.aquat.seleniumframework.data.ProjectProperty;
-import org.aquat.seleniumframework.data.PropertyService;
+import org.aquat.seleniumframework.data.ConfigService;
 import org.aquat.seleniumframework.util.SystemLogger;
+import org.aquat.seleniumframework.yamlmodel.ProjectConfig;
 
 /**
  * <p>Provide abilities to set browser properties and create instances</p>
@@ -16,10 +15,10 @@ public class BrowserFactory {
 	private static Logger logger = SystemLogger.getLogger(BrowserFactory.class);
 	private WebDriver driver; 
 	
-	public WebDriver getInstance() {			
-		PropertyService ps = PropertyService.getInstance();
-		String type = ps.getProperty(ProjectProperty.BROWSER_TYPE);
-		boolean mode = Boolean.parseBoolean(ps.getProperty(ProjectProperty.SELENIUM_GRID));
+	public WebDriver getInstance() {					
+		ProjectConfig config = ConfigService.getInstance().getConfigModel();
+		boolean mode =  config.getSelenium().isGrid();
+		String type = config.getBrowser().getType();
 		
 		if (type.equalsIgnoreCase("chrome")) {
 			driver =  new ChromeBrowser().startBrowser(mode);
@@ -40,9 +39,9 @@ public class BrowserFactory {
 		return driver;
 	}
 	
-	private void setSize() {
-		PropertyService ps = PropertyService.getInstance();
-		String size = ps.getProperty(ProjectProperty.BROWSER_WINDOW_SIZE).trim();
+	private void setSize() {		
+		ProjectConfig config = ConfigService.getInstance().getConfigModel();
+		String size = config.getBrowser().getSize();
 		
 		if (size.equalsIgnoreCase("maximize")) {
 			driver.manage().window().maximize();

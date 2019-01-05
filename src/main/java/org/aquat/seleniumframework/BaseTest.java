@@ -2,25 +2,22 @@ package org.aquat.seleniumframework;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.aquat.seleniumframework.browser.BrowserFactory;
 import org.aquat.seleniumframework.data.DataService;
-import org.aquat.seleniumframework.data.ProjectProperty;
-import org.aquat.seleniumframework.data.PropertyService;
 import org.aquat.seleniumframework.util.SystemLogger;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Listeners;
 
 /**
- * <p>All test case class should extend BaseTest</p>
+ * <p>All test case classes should extend BaseTest</p>
  * 
  */
-@Listeners({TestListener.class,
-			SuiteListener.class})
+@Listeners({TestNGTestListener.class,
+			TestNGSuiteListener.class})
 public class BaseTest {
 	public static Logger logger = SystemLogger.getLogger(BaseTest.class);
 	
@@ -43,16 +40,6 @@ public class BaseTest {
 	}
 
 	/**
-	 * Open URL in project.properties file. Construct page object with given page object class
-	 * @param page
-	 * @return
-	 */
-	public <T extends BasePage> T navigateTo(Class<? extends BasePage> page) {
-		String url = PropertyService.getInstance().getProperty(ProjectProperty.TEST_URL);
-		return navigateTo(page, url);
-	}
-
-	/**
 	 * Open URL in parameter. Construct page object with given page object class.
 	 * @param page
 	 * @param url
@@ -60,7 +47,6 @@ public class BaseTest {
 	 */
 	public <T extends BasePage> T navigateTo(Class<? extends BasePage> page, String url) {
 		driver.get(url);
-		logInSAP();
 		return pageConstuctor(page);
 	}
 
@@ -97,54 +83,24 @@ public class BaseTest {
 		return t;
 	}
 
-	/**
-	 * Use page object LogInPage to deal with login process. LogInPage should be customized for different login UI.
-	 * LogIn will be ignored if property 'testing.login.page' is empty or 'testing.username' is empty
-	 */
-	private void logInSAP() {
-		PropertyService ps = PropertyService.getInstance();
-		String logInClass = ps.getProperty(ProjectProperty.TEST_LOGIN_CLASS);
-		String logInMethod = ps.getProperty(ProjectProperty.TEST_LOGIN_METHOD);
-		String user = ps.getProperty(ProjectProperty.TEST_USERNAME);
-		String pwd = ps.getProperty(ProjectProperty.TEST_PASSWORD);
-
-		if ((!logInClass.isEmpty()) && (!user.isEmpty())) {
-			try {
-				Object o = Class.forName(logInClass).getConstructor(WebDriver.class).newInstance(driver);
-				Method m = Class.forName(logInClass).getMethod(logInMethod, String.class, String.class);
-				m.invoke(o, user, pwd);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 
 	/**
 	 * 
-	 * Read test data from Excel file at first. </br>
-	 * If there is no Excel file, then read the property from the file located at the same directory of test case
+	 * Read test data from yaml file
 	 * 
 	 * @param key 
 	 * @return String
 	 */
 	public String getData(String key) {
 		String name = this.getClass().getName();
-		//String value = PropertyHandler.getTestData(name, key);
 		
-		String value = DataService.getInstance().getTestData(name, key);
-		logger.info("[Test Data] " + key + "=" + value);
+		String value = DataService.getInstance().getTestParameters(name, key);
+		logger.info("[Test Parameter] " + key + " = " + value);
+		
+		if (value == null) {
+			throw new RuntimeException("Test Parameter: " + key + " not defined.");
+		}
+		
 		return value;
 	}
 
