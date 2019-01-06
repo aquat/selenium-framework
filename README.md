@@ -1,4 +1,4 @@
-# gs-selenium-framework
+# Selenium Framework
 
 Release Note
 
